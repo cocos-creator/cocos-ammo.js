@@ -30,6 +30,7 @@ declare namespace Bullet {
         Transform_getOrigin(p: ptr): ptr;
         Transform_setRotation(p: ptr, quate: ptr): void;
         Transform_getRotation(p: ptr, quate: ptr): void;
+        Transform_invert(trans0: ptr, trans1: ptr): void;
 
         MotionState_del(p: ptr): void;
         MotionState_getWorldTransform(p: ptr, transform: ptr): void;
@@ -49,6 +50,9 @@ declare namespace Bullet {
         P2PConstraint_new(ptr0: ptr, ptr1: ptr, ptr2: ptr, ptr3: ptr): ptr;
         P2PConstraint_setPivotA(ptr0: ptr, ptr1: ptr): void;
         P2PConstraint_setPivotB(ptr0: ptr, ptr1: ptr): void;
+        TypedConstraint_setMaxImpulseThreshold(ptr0: ptr, maxImpulse: number): void;
+        FixedConstraint_new(ptr0: ptr, ptr1: ptr, ptr2: ptr, ptr3: ptr): ptr;
+        FixedConstraint_setFrames(ptr0: ptr, ptr1: ptr, ptr2: ptr): void;
 
         // shapes
 
