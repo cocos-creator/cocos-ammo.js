@@ -30,7 +30,6 @@ declare namespace Bullet {
         Transform_getOrigin(p: ptr): ptr;
         Transform_setRotation(p: ptr, quate: ptr): void;
         Transform_getRotation(p: ptr, quate: ptr): void;
-        Transform_invert(trans0: ptr, trans1: ptr): void;
 
         MotionState_del(p: ptr): void;
         MotionState_getWorldTransform(p: ptr, transform: ptr): void;
