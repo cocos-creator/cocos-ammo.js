@@ -224,5 +224,7 @@ declare namespace Bullet {
 }
 
 declare module '@cocos/bullet' {
-    export = instantiate;
+    const bulletType: 'fallback' | 'wasm' | 'asmjs';
+    export { bulletType }
+    export default instantiate;
 }
