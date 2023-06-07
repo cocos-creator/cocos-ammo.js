@@ -1,5 +1,7 @@
-// tslint:disable
-declare function instantiate(env: any, buffer: ArrayBuffer): Bullet.instance;
+declare module 'external:emscripten/bullet/bullet.asm.js' {
+    function factory (env: any, wasmMemory: ArrayBuffer): Bullet.instance;
+    export default factory;
+}
 
 declare namespace Bullet {
     type ptr = number;
@@ -279,10 +281,4 @@ declare namespace Bullet {
         BoxCharacterController_setHalfSideExtent(ptrCCT: ptr, v: number): void;
         BoxCharacterController_setHalfForwardExtent(ptrCCT: ptr, v: number): void;
     }
-}
-
-declare module '@cocos/bullet' {
-    const bulletType: 'fallback' | 'wasm' | 'asmjs';
-    export { bulletType }
-    export default instantiate;
 }
