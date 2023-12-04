@@ -42,7 +42,7 @@ cd BUILD_WASM
 if [ "$debug"  = 1 ]; then
 mode="debug"
 else
-mode="release"
+mode="MinSizeRel"
 fi
 
 echo -e "\033[01;32m --------------- Build $mode --------------- \033[0m"
