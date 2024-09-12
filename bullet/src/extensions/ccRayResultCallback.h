@@ -40,8 +40,8 @@ struct ccClosestRayResultCallback : public ClosestRayResultCallback
 		btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
 		// Ignore charactor controller as Physx doesn't handle it in raycast.
 		if (isCharacterController(co)) {
-            return false;
-        }
+                    return false;
+                }
 
 		if ((proxy0->m_collisionFilterGroup & m_collisionFilterMask) != 0) {			
 			if (!m_queryTrigger && proxy0->m_clientObject) {
@@ -111,8 +111,8 @@ struct ccAllHitsRayResultCallback : public AllHitsRayResultCallback
 		btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
 		// Ignore charactor controller as Physx doesn't handle it in raycast.
 		if (isCharacterController(co)) {
-            return false;
-        }
+                    return false;
+                }
 
 		if ((proxy0->m_collisionFilterGroup & m_collisionFilterMask) != 0) {			
 			if (!m_queryTrigger && proxy0->m_clientObject) {
