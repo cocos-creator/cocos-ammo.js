@@ -183,7 +183,14 @@ extern "C"
         btCollisionWorld *world = (btCollisionWorld *)collisionWorld;
         btCapsuleCharacterControllerDesc *desc = (btCapsuleCharacterControllerDesc *)ptrBtCapsuleCharacterControllerDesc;
         void* ptr = (void*)userObjectPointer;
-        return (int)new btCapsuleCharacterController(world, desc, ptr);
+        auto* controller = new btCapsuleCharacterController(world, desc, ptr);
+
+        btGhostObject* ghostObject = controller->getGhostObject();
+        uintptr_t intAsPointer = static_cast<uintptr_t>(0xffffffff);
+        void* userPointer = reinterpret_cast<void*>(intAsPointer);
+        ghostObject->setUserPointer(userPointer);
+
+        return (int)controller;
     }
 
     void DLL_EXPORT CapsuleCharacterController_setRadius(int ptrCCT, float radius)
