@@ -15,6 +15,14 @@ typedef btCollisionWorld::ClosestRayResultCallback ClosestRayResultCallback;
 typedef btCollisionWorld::AllHitsRayResultCallback AllHitsRayResultCallback;
 typedef btCollisionWorld::LocalRayResult LocalRayResult;
 
+namespace {
+	bool isCharacterController(btCollisionObject* obj) {
+		uintptr_t userPointer = reinterpret_cast<uintptr_t>(obj->getUserPointer());
+		// character controller set user pointer in CapsuleCharacterController_new().
+		return (userPointer == static_cast<uintptr_t>(0xffffffff));
+	}
+}
+
 struct ccClosestRayResultCallback : public ClosestRayResultCallback
 {
 	int m_shapeUserPointer;
@@ -29,9 +37,14 @@ struct ccClosestRayResultCallback : public ClosestRayResultCallback
 	// return true when pairs need collision
 	virtual bool needsCollision(btBroadphaseProxy* proxy0) const
 	{
+		btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
+		// Ignore charactor controller as Physx doesn't handle it in raycast.
+		if (isCharacterController(co)) {
+            return false;
+        }
+
 		if ((proxy0->m_collisionFilterGroup & m_collisionFilterMask) != 0) {			
 			if (!m_queryTrigger && proxy0->m_clientObject) {
-				btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
 				return co->hasContactResponse();
 			}
 			return true;
@@ -95,9 +108,14 @@ struct ccAllHitsRayResultCallback : public AllHitsRayResultCallback
 	// return true when pairs need collision
 	virtual bool needsCollision(btBroadphaseProxy* proxy0) const
 	{
+		btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
+		// Ignore charactor controller as Physx doesn't handle it in raycast.
+		if (isCharacterController(co)) {
+            return false;
+        }
+
 		if ((proxy0->m_collisionFilterGroup & m_collisionFilterMask) != 0) {			
 			if (!m_queryTrigger && proxy0->m_clientObject) {
-				btCollisionObject* co = static_cast<btCollisionObject*>(proxy0->m_clientObject);
 				return co->hasContactResponse();
 			}
 			return true;
