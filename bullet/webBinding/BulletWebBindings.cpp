@@ -309,6 +309,7 @@ EMSCRIPTEN_BINDINGS(bullet) {
         function("ccAllRayCallback_getHitPointWorld", &ccAllRayCallback_getHitPointWorld, allow_raw_pointers());
         function("ccAllRayCallback_getHitNormalWorld", &ccAllRayCallback_getHitNormalWorld, allow_raw_pointers());
         function("ccAllRayCallback_getCollisionShapePtrs", &ccAllRayCallback_getCollisionShapePtrs, allow_raw_pointers());
+        function("ccAllRayCallback_getClosestHitFraction", &ccAllRayCallback_getClosestHitFraction, allow_raw_pointers());
 
         function("ccClosestRayCallback_static", &ccClosestRayCallback_static, allow_raw_pointers());
         function("ccClosestRayCallback_setFlags", &ccClosestRayCallback_setFlags, allow_raw_pointers());
@@ -322,12 +323,15 @@ EMSCRIPTEN_BINDINGS(bullet) {
         function("ccAllConvexCallback_getHitPointWorld", &ccAllConvexCallback_getHitPointWorld, allow_raw_pointers());
         function("ccAllConvexCallback_getHitNormalWorld", &ccAllConvexCallback_getHitNormalWorld, allow_raw_pointers());
         function("ccAllConvexCallback_getCollisionShapePtrs", &ccAllConvexCallback_getCollisionShapePtrs, allow_raw_pointers());
+        function("ccAllConvexCallback_getClosestHitFraction", &ccAllConvexCallback_getClosestHitFraction, allow_raw_pointers());
+
 
         function("ccClosestConvexCallback_static", &ccClosestConvexCallback_static, allow_raw_pointers());
         function("ccClosestConvexCallback_reset", &ccClosestConvexCallback_reset, allow_raw_pointers());
         function("ccClosestConvexCallback_getHitPointWorld", &ccClosestConvexCallback_getHitPointWorld, allow_raw_pointers());
         function("ccClosestConvexCallback_getHitNormalWorld", &ccClosestConvexCallback_getHitNormalWorld, allow_raw_pointers());
         function("ccClosestConvexCallback_getCollisionShapePtr", &ccClosestConvexCallback_getCollisionShapePtr, allow_raw_pointers());
+        function("ccClosestConvexCallback_getClosestHitFraction", &ccClosestConvexCallback_getClosestHitFraction, allow_raw_pointers());
 
         function("ccMaterial_new", &ccMaterial_new, allow_raw_pointers());
         function("ccMaterial_set", &ccMaterial_set, allow_raw_pointers());

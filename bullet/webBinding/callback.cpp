@@ -100,6 +100,12 @@
         ccAllHitsRayResultCallback *result = (ccAllHitsRayResultCallback *)ptr;
         return (int)&result->getCollisionShapePtrs();
     }
+
+    float DLL_EXPORT ccAllRayCallback_getClosestHitFraction(int ptr)
+    {
+        ccAllHitsRayResultCallback *result = (ccAllHitsRayResultCallback *)ptr;
+        return result->getClosestHitFraction();
+    }
     
     // ccClosestConvexResultCallback
     int DLL_EXPORT ccClosestConvexCallback_static()
@@ -134,6 +140,12 @@
         return cb->getCollisionShapePtr();
     }
 
+    float DLL_EXPORT ccClosestConvexCallback_getClosestHitFraction(int ptr)
+    {
+        ccClosestConvexResultCallback *cb = (ccClosestConvexResultCallback *)ptr;
+        return cb->getClosestHitFraction();
+    }
+
     // ccAllHitsConvexResultCallback
     int DLL_EXPORT ccAllConvexCallback_static()
     {
@@ -165,6 +177,12 @@
     {
         ccAllHitsConvexResultCallback *result = (ccAllHitsConvexResultCallback *)ptr;
         return (int)&result->getCollisionShapePtrs();
+    }
+
+    float DLL_EXPORT ccAllConvexCallback_getClosestHitFraction(int ptr)
+    {
+        ccAllHitsConvexResultCallback *result = (ccAllHitsConvexResultCallback *)ptr;
+        return result->getClosestHitFraction();
     }
 
     // btManifoldPoint

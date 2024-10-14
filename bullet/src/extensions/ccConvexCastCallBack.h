@@ -140,6 +140,11 @@ struct ccAllHitsConvexResultCallback : public AllHitsConvexResultCallback
 		return m_hitFractions;
 	}
 
+	btScalar getClosestHitFraction ()
+	{
+		return m_closestHitFraction;
+	}
+
 	void reset(int mask, bool queryTrigger)
 	{
 		m_collisionFilterMask = mask;
