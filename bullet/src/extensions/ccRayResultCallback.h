@@ -157,6 +157,11 @@ struct ccAllHitsRayResultCallback : public AllHitsRayResultCallback
 		return m_hitFractions;
 	}
 
+	btScalar getClosestHitFraction()
+	{
+		return m_closestHitFraction;
+	}
+
 	void reset(unsigned int mask, bool queryTrigger)
 	{
 		m_collisionFilterMask = mask;
