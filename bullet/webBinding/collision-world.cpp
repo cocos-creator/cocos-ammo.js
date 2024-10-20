@@ -45,6 +45,12 @@
         return (int)new btSequentialImpulseConstraintSolver();
     }
 
+    int DLL_EXPORT SequentialImpulseConstraintSolver_reset(int ptr)
+    {
+        btSequentialImpulseConstraintSolver *info = (btSequentialImpulseConstraintSolver *)ptr;
+        info->reset();
+    }
+
     // btDispatcherInfo
     bool DLL_EXPORT CollisionWorld_get_m_useContinuous(int ptr)
     {

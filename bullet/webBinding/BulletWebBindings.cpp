@@ -269,6 +269,8 @@ EMSCRIPTEN_BINDINGS(bullet) {
         function("DbvtBroadphase_new", &DbvtBroadphase_new, allow_raw_pointers());
         function("SequentialImpulseConstraintSolver_new", &SequentialImpulseConstraintSolver_new, allow_raw_pointers());
 
+        function("SequentialImpulseConstraintSolver_reset", &SequentialImpulseConstraintSolver_reset, allow_raw_pointers());
+
         function("CollisionWorld_addCollisionObject", &CollisionWorld_addCollisionObject, allow_raw_pointers());
         function("CollisionWorld_removeCollisionObject", &CollisionWorld_removeCollisionObject, allow_raw_pointers());
         function("CollisionWorld_rayTest", &CollisionWorld_rayTest, allow_raw_pointers());
