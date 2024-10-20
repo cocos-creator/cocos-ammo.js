@@ -229,6 +229,7 @@ declare namespace Bullet {
 
         DbvtBroadphase_new(): ptr;
         SequentialImpulseConstraintSolver_new(): ptr;
+        SequentialImpulseConstraintSolver_reset(): void;
 
         CollisionWorld_addCollisionObject(p: ptr, body: ptr, g: number, m: number): void;
         CollisionWorld_removeCollisionObject(p: ptr, body: ptr): void;
