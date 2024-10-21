@@ -1,8 +1,11 @@
 .cache
+.cmake
 compile_commands.json
 build-for-vscode
 build-win
+build
 cocos
+publish
 bullet/build
 bullet/build-win
 bullet/examples/pybullet
