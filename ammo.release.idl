@@ -504,7 +504,7 @@ interface btCompoundShape {
   float getMargin();
   
   ///XXX
-  void setMaterial(long childShapeindex, float f, float r, optional float rf, optional float sf);
+  //void setMaterial(long childShapeindex, float f, float r, optional float rf, optional float sf);
 };
 btCompoundShape implements btCollisionShape;
 
@@ -922,8 +922,8 @@ interface ccDiscreteDynamicsWorld {
   void setDeactivationTime(float v);
   void setNarrowPhaseMethod(long v);
   void setAllowCcdPenetration(float v);
-  void setCcdCastCheckResponse(boolean v);
-  [Ref] btIntArray getCcdTriggerRecorder();
+  //void setCcdCastCheckResponse(boolean v);
+  //[Ref] btIntArray getCcdTriggerRecorder();
 };
 ccDiscreteDynamicsWorld implements btDiscreteDynamicsWorld;
 
