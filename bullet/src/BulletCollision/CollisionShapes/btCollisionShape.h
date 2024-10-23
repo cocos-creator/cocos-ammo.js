@@ -159,7 +159,7 @@ public:
 
 	int getUserPointerAsInt() const
 	{
-		return (int)m_userPointer;
+		return (int)(size_t)m_userPointer;
 	}
 
 	virtual	int	calculateSerializeBufferSize() const;
