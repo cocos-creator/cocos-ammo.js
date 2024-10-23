@@ -45,7 +45,7 @@
         return (int)new btSequentialImpulseConstraintSolver();
     }
 
-    int DLL_EXPORT SequentialImpulseConstraintSolver_reset(int ptr)
+    void DLL_EXPORT SequentialImpulseConstraintSolver_reset(int ptr)
     {
         btSequentialImpulseConstraintSolver *info = (btSequentialImpulseConstraintSolver *)ptr;
         info->reset();
