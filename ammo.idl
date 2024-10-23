@@ -185,6 +185,7 @@ interface ClosestRayResultCallback {
 };
 ClosestRayResultCallback implements RayResultCallback;
 
+[Prefix="cc::"]
 interface ccClosestRayResultCallback {
   void ccClosestRayResultCallback([Const, Ref] btVector3 from, [Const, Ref] btVector3 to);
   attribute long m_shapeUserPointer;
@@ -222,6 +223,7 @@ interface AllHitsRayResultCallback {
 };
 AllHitsRayResultCallback implements RayResultCallback;
 
+[Prefix="cc::"]
 interface ccAllHitsRayResultCallback {
   void ccAllHitsRayResultCallback([Const, Ref] btVector3 from, [Const, Ref] btVector3 to);
   [Value] attribute btIntArray m_shapeUserPointers;
@@ -618,6 +620,7 @@ interface btOverlappingPairCallback {
 interface btOverlapFilterCallback {
 };
 
+[Prefix="cc::"]
 interface ccOverlapFilterCallback {
   void ccOverlapFilterCallback();
 };
@@ -916,6 +919,7 @@ interface btDiscreteDynamicsWorld {
 };
 btDiscreteDynamicsWorld implements btDynamicsWorld;
 
+[Prefix="cc::"]
 interface ccDiscreteDynamicsWorld {
   void ccDiscreteDynamicsWorld(btDispatcher dispatcher, btBroadphaseInterface pairCache, btConstraintSolver constraintSolver, btCollisionConfiguration collisionConfiguration);
   void setAllowSleep(boolean v);
@@ -1043,6 +1047,7 @@ interface btKinematicCharacterController {
 };
 btKinematicCharacterController implements btActionInterface;
 
+[Prefix="cc::"]
 interface ccKinematicCharacterController {
   void ccKinematicCharacterController(btPairCachingGhostObject ghostObject, btConvexShape convexShape, float stepHeight, optional long upAxis);
 
