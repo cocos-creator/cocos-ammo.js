@@ -5,7 +5,16 @@ from subprocess import Popen
 
 # Definitions
 
-INCLUDES = ['btBulletDynamicsCommon.h',
+INCLUDES = [
+os.path.join('BulletSoftBody', 'btSoftBody.h'),
+os.path.join('BulletSoftBody', 'btSoftRigidDynamicsWorld.h'), 
+os.path.join('BulletSoftBody', 'btDefaultSoftBodySolver.h'),
+os.path.join('BulletSoftBody', 'btSoftBodyRigidBodyCollisionConfiguration.h'),
+os.path.join('BulletSoftBody', 'btSoftBodyHelpers.h'),
+
+'btBulletDynamicsCommon.h',
+os.path.join('BulletDynamics', 'Character', 'btKinematicCharacterController.h'),
+
 os.path.join('BulletCollision', 'CollisionShapes', 'btHeightfieldTerrainShape.h'),
 os.path.join('BulletCollision', 'CollisionShapes', 'btConvexPolyhedron.h'),
 os.path.join('BulletCollision', 'CollisionShapes', 'btShapeHull.h'),
@@ -22,8 +31,6 @@ os.path.join('BulletCollision', 'CollisionDispatch', 'btGhostObject.h'),
 # os.path.join('BulletCollision', 'NarrowPhaseCollision', 'btRaycastCallback.h'),
 # os.path.join('BulletCollision', 'NarrowPhaseCollision', 'btConvexCast.h'),
 
-os.path.join('BulletDynamics', 'Character', 'btKinematicCharacterController.h'),
-
 # os.path.join('extensions', 'btCharacterController.cpp'),
 # os.path.join('extensions', 'btCharacterControllerDefs.h'),
 # os.path.join('extensions', 'ccCompoundShape.cpp'),
@@ -34,14 +41,8 @@ os.path.join('extensions', 'ccOverlapFilterCallback.h'),
 os.path.join('extensions', 'ccRayResultCallback.h'),
 os.path.join('extensions', 'ccDiscreteDynamicsWorld.cpp'),
 os.path.join('extensions', 'ccConvexCastCallBack.h'),
-
-os.path.join('BulletSoftBody', 'btSoftBody.h'),
-os.path.join('BulletSoftBody', 'btSoftRigidDynamicsWorld.h'), 
-os.path.join('BulletSoftBody', 'btDefaultSoftBodySolver.h'),
-os.path.join('BulletSoftBody', 'btSoftBodyRigidBodyCollisionConfiguration.h'),
-os.path.join('BulletSoftBody', 'btSoftBodyHelpers.h'),
-
-os.path.join('..', '..', 'idl_templates.h')]
+os.path.join('..', '..', 'idl_templates.h')
+]
 
 # Startup
 
@@ -116,6 +117,7 @@ def build():
   if not_debug and not_release:
       if debug:
         args.append('-g3')
+        closure = False
       elif release:
         args.append('-O3')
       else:
@@ -205,7 +207,7 @@ def build():
 
     stage('Build bindings')
 
-    args = ['-I../src', '-c','-Woverloaded-virtual']
+    args = ['-I../src', '-c']
     for include in INCLUDES:
       args += ['-include', include]
     args = ['emcc','glue.cpp'] + args
