@@ -12,11 +12,11 @@ os.path.join('BulletCollision', 'CollisionShapes', 'btShapeHull.h'),
 os.path.join('BulletCollision', 'CollisionDispatch', 'btGhostObject.h'),
 
 os.path.join('BulletDynamics', 'Character', 'btKinematicCharacterController.h'),
-os.path.join('..', '..', 'extensions', 'ccKinematicCharacterController.cpp'),
-os.path.join('..', '..', 'extensions', 'ccOverlapFilterCallback.h'),
-os.path.join('..', '..', 'extensions', 'ccRayResultCallback.h'),
-os.path.join('..', '..', 'extensions', 'ccDiscreteDynamicsWorld.cpp'),
-os.path.join('..', '..', 'extensions', 'ccConvexCastCallBack.h'),
+os.path.join('extensions', 'ccKinematicCharacterController.cpp'),
+os.path.join('extensions', 'ccOverlapFilterCallback.h'),
+os.path.join('extensions', 'ccRayResultCallback.h'),
+os.path.join('extensions', 'ccDiscreteDynamicsWorld.cpp'),
+os.path.join('extensions', 'ccConvexCastCallBack.h'),
 
 os.path.join('BulletSoftBody', 'btSoftBody.h'),
 os.path.join('BulletSoftBody', 'btSoftRigidDynamicsWorld.h'), os.path.join('BulletSoftBody', 'btDefaultSoftBodySolver.h'),
@@ -48,7 +48,8 @@ def build():
   if not EMSCRIPTEN_ROOT:
     print("ERROR: EMSCRIPTEN_ROOT environment variable (which should be equal to emscripten's root dir) not found")
     sys.exit(1)
-
+  
+  print(EMSCRIPTEN_ROOT)
   sys.path.append(EMSCRIPTEN_ROOT)
   import tools.shared as emscripten
 
