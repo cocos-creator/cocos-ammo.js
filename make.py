@@ -1,48 +1,29 @@
 #!/usr/bin/python
 
-import os, sys, multiprocessing
-from subprocess import Popen
+import os, sys, re, json, shutil, multiprocessing
+from subprocess import Popen, PIPE, STDOUT
 
 # Definitions
 
-INCLUDES = [
-os.path.join('BulletSoftBody', 'btSoftBody.h'),
-os.path.join('BulletSoftBody', 'btSoftRigidDynamicsWorld.h'), 
-os.path.join('BulletSoftBody', 'btDefaultSoftBodySolver.h'),
-os.path.join('BulletSoftBody', 'btSoftBodyRigidBodyCollisionConfiguration.h'),
-os.path.join('BulletSoftBody', 'btSoftBodyHelpers.h'),
-
-'btBulletDynamicsCommon.h',
-os.path.join('BulletDynamics', 'Character', 'btKinematicCharacterController.h'),
-
+INCLUDES = ['btBulletDynamicsCommon.h',
 os.path.join('BulletCollision', 'CollisionShapes', 'btHeightfieldTerrainShape.h'),
 os.path.join('BulletCollision', 'CollisionShapes', 'btConvexPolyhedron.h'),
 os.path.join('BulletCollision', 'CollisionShapes', 'btShapeHull.h'),
-# os.path.join('BulletCollision', 'CollisionShapes', 'btConvexInternalShape.h'),
-# os.path.join('BulletCollision', 'CollisionShapes', 'btPolyhedralConvexShape.h'),
-# os.path.join('BulletCollision', 'CollisionShapes', 'btTriangleCallback.h'),
-# os.path.join('BulletCollision', 'CollisionShapes', 'btConvexShape.h'),
-
 os.path.join('BulletCollision', 'CollisionDispatch', 'btGhostObject.h'),
-# os.path.join('BulletCollision', 'CollisionDispatch', 'btCollisionWorld.cpp'),
-# os.path.join('BulletCollision', 'CollisionDispatch', 'btCollisionDispatcher.h'),
-# os.path.join('BulletCollision', 'CollisionDispatch', 'btCollisionObject.h'),
 
-# os.path.join('BulletCollision', 'NarrowPhaseCollision', 'btRaycastCallback.h'),
-# os.path.join('BulletCollision', 'NarrowPhaseCollision', 'btConvexCast.h'),
+os.path.join('BulletDynamics', 'Character', 'btKinematicCharacterController.h'),
+os.path.join('..', '..', 'extensions', 'ccKinematicCharacterController.cpp'),
+os.path.join('..', '..', 'extensions', 'ccOverlapFilterCallback.h'),
+os.path.join('..', '..', 'extensions', 'ccRayResultCallback.h'),
+os.path.join('..', '..', 'extensions', 'ccDiscreteDynamicsWorld.cpp'),
+os.path.join('..', '..', 'extensions', 'ccConvexCastCallBack.h'),
 
-# os.path.join('extensions', 'btCharacterController.cpp'),
-# os.path.join('extensions', 'btCharacterControllerDefs.h'),
-# os.path.join('extensions', 'ccCompoundShape.cpp'),
-# os.path.join('extensions', 'ccMaterial.h'),
+os.path.join('BulletSoftBody', 'btSoftBody.h'),
+os.path.join('BulletSoftBody', 'btSoftRigidDynamicsWorld.h'), os.path.join('BulletSoftBody', 'btDefaultSoftBodySolver.h'),
+os.path.join('BulletSoftBody', 'btSoftBodyRigidBodyCollisionConfiguration.h'),
+os.path.join('BulletSoftBody', 'btSoftBodyHelpers.h'),
 
-os.path.join('extensions', 'ccKinematicCharacterController.cpp'),
-os.path.join('extensions', 'ccOverlapFilterCallback.h'),
-os.path.join('extensions', 'ccRayResultCallback.h'),
-os.path.join('extensions', 'ccDiscreteDynamicsWorld.cpp'),
-os.path.join('extensions', 'ccConvexCastCallBack.h'),
-os.path.join('..', '..', 'idl_templates.h')
-]
+os.path.join('..', '..', 'idl_templates.h')]
 
 # Startup
 
@@ -58,19 +39,16 @@ def which(program):
 def build():
   EMSCRIPTEN_ROOT = os.environ.get('EMSCRIPTEN')
   if not EMSCRIPTEN_ROOT:
-    envEMSDK = os.environ.get('EMSDK')
-    if not envEMSDK:
-      print("ERROR: envEMSDK environment variable not found")
-      sys.exit(1)
-    EMSCRIPTEN_ROOT = os.path.join(envEMSDK, 'upstream', 'emscripten')
+    emcc = which('emcc')
+    EMSCRIPTEN_ROOT = os.path.dirname(emcc)
 
   if not EMSCRIPTEN_ROOT:
-    print("ERROR: EMSCRIPTEN_ROOT environment variable (which should be equal to emscripten's root dir) not found")
+    print "ERROR: EMSCRIPTEN_ROOT environment variable (which should be equal to emscripten's root dir) not found"
     sys.exit(1)
 
   sys.path.append(EMSCRIPTEN_ROOT)
-  # import tools.config as config
-  # import tools.shared as shared
+  import tools.shared as emscripten
+
   # Settings
 
   '''
@@ -95,49 +73,35 @@ def build():
   g2 = 'g2' in sys.argv
   g3 = 'g3' in sys.argv
   g4 = 'g4' in sys.argv
-  debug = 'debug' in sys.argv
-  release = 'release' in sys.argv
 
-  args = []
-  if O1 : args.append('-O1')
-  elif O2 : args.append('-O2')
-  elif O3 : args.append('-O3')
-  elif Os : args.append('-Os')
-  elif Oz : args.append('-Oz')
-  else:
-    not_debug = True
+  args = '-O3'
+  if O1 : args = '-O1'
+  elif O2 : args = '-O2'
+  elif O3 : args = '-O3'
+  elif Os : args = '-Os'
+  elif Oz : args = '-Oz'
 
-  if g1 : args.append('-g0')
-  elif g2 : args.append('-g1')
-  elif g3 : args.append('-g2')
-  elif g4 : args.append('-g3')
-  else:
-    not_release = True
+  if g1 : args += ' -g1'
+  elif g2 : args += ' -g2'
+  elif g3 : args += ' -g3'
+  elif g4 : args += ' -g4'
 
-  if not_debug and not_release:
-      if debug:
-        args.append('-g3')
-        closure = False
-      elif release:
-        args.append('-O3')
-      else:
-        args.append('-O3')
-  # --llvm-lto
-  args += '-flto=thin -s EXIT_RUNTIME=0 -s FILESYSTEM=0 -s ASSERTIONS=0 -s ENVIRONMENT=web,worker'.split(" ")
+  # args += ' -g4'
+
+  args += ' --llvm-lto 1 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s ASSERTIONS=0 -s ENVIRONMENT=web,worker'
   # args = '-O3 --llvm-lto 1 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=["UTF8ToString"] -s ASSERTIONS=1'
   if add_function_support:
-    args += '-s ALLOW_TABLE_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=["addFunction"]'.split(" ")
+    args += ' -s RESERVED_FUNCTION_POINTERS=20 -s EXTRA_EXPORTED_RUNTIME_METHODS=["addFunction"]'  
   if not wasm:
-    args += '-s WASM=0 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ELIMINATE_DUPLICATE_FUNCTIONS=1 -s SINGLE_FILE=1'.split(" ") # -s LEGACY_VM_SUPPORT=1'
+    args += ' -s WASM=0 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ELIMINATE_DUPLICATE_FUNCTIONS=1 -s SINGLE_FILE=1' # -s LEGACY_VM_SUPPORT=1'
   else:
-    args += '-s WASM=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1'.split(" ") # -s BINARYEN_TRAP_MODE="clamp"
+    args += ' -s WASM=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1' # -s BINARYEN_TRAP_MODE="clamp"
   if closure:
-    args += '--closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1'.split(" ") # closure complains about the bullet Node class (Node is a DOM thing too)
+    args += ' --closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1' # closure complains about the bullet Node class (Node is a DOM thing too)
   else:
-    args += '-s DYNAMIC_EXECUTION=0'.split(" ")
+    args += ' -s NO_DYNAMIC_EXECUTION=1'
 
-
-  emcc_args = args
+  emcc_args = args.split(' ')
 
   emcc_args += ['-s', 'TOTAL_MEMORY=%d' % (64*1024*1024)] # default 64MB. Compile with ALLOW_MEMORY_GROWTH if you want a growable heap (slower though).
   #emcc_args += ['-s', 'ALLOW_MEMORY_GROWTH=1'] # resizable heap, with some amount of slowness
@@ -151,17 +115,12 @@ def build():
   if full:
     this_idl = 'ammo.idl'
     target = 'ammo.full.js' if not wasm else 'ammo.full.wasm.js'
-  
-  if debug:
-    this_idl = 'ammo.idl'
-    target = 'ammo.debug.js' if not wasm else 'ammo.debug.wasm.js'
-  elif release:
-    this_idl = 'ammo.release.idl'
-    target = 'ammo.release.js' if not wasm else 'ammo.release.wasm.js'
 
-  print('--------------------------------------------------')
-  print('Building ammo.js, build type:', emcc_args)
-  print('--------------------------------------------------')
+  print
+  print '--------------------------------------------------'
+  print 'Building ammo.js, build type:', emcc_args
+  print '--------------------------------------------------'
+  print
 
   '''
   import os, sys, re
@@ -172,7 +131,7 @@ def build():
   t1 = infile
   while True:
     t2 = re.sub(r'\(\n?!\n?1\n?\+\n?\(\n?!\n?1\n?\+\n?(\w)\n?\)\n?\)', lambda m: '(!1+' + m.group(1) + ')', t1)
-    print(len(infile), len(t2))
+    print len(infile), len(t2)
     if t1 == t2: break
     t1 = t2
 
@@ -185,9 +144,11 @@ def build():
     global stage_counter
     stage_counter += 1
     text = 'Stage %d: %s' % (stage_counter, text)
-    print('=' * len(text))
-    print(text)
-    print('=' * len(text))
+    print
+    print '=' * len(text)
+    print text
+    print '=' * len(text)
+    print
 
   # Main
 
@@ -198,45 +159,41 @@ def build():
       os.makedirs('build')
     os.chdir('build')
 
-    glue_args = ["python",os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, this_idl), 'glue']
-    stage('Generate bindings:'+' '.join(glue_args))
-    Popen(glue_args).communicate()
+    stage('Generate bindings')
+
+    Popen([emscripten.PYTHON, os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, this_idl), 'glue']).communicate()
     # Popen([emscripten.PYTHON, os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, 'ammo.idl'), 'glue']).communicate()
     assert os.path.exists('glue.js')
     assert os.path.exists('glue.cpp')
 
+    stage('Build bindings')
+
     args = ['-I../src', '-c']
     for include in INCLUDES:
       args += ['-include', include]
-    args = ['emcc','glue.cpp'] + args
-    args = args + ['-o','glue.o']
-
-    stage('Build bindings:'+' '.join(args))
-
-    Popen(args).communicate()
+    emscripten.Building.emcc('glue.cpp', args, 'glue.o')
     assert(os.path.exists('glue.o'))
 
     # Configure with CMake on Windows, and with configure on Unix.
-    cmake_build = sys.platform.startswith("win")
+    cmake_build = emscripten.WINDOWS
 
     if cmake_build:
       if not os.path.exists('CMakeCache.txt'):
         stage('Configure via CMake')
-        Popen(['python', os.path.join(EMSCRIPTEN_ROOT, 'emcmake'), 'cmake', '..', '-DBUILD_DEMOS=OFF', '-DBUILD_EXTRAS=OFF', '-DBUILD_CPU_DEMOS=OFF', '-DUSE_GLUT=OFF', '-DCMAKE_BUILD_TYPE=Release']).communicate()
+        emscripten.Building.configure([emscripten.PYTHON, os.path.join(EMSCRIPTEN_ROOT, 'emcmake'), 'cmake', '..', '-DBUILD_DEMOS=OFF', '-DBUILD_EXTRAS=OFF', '-DBUILD_CPU_DEMOS=OFF', '-DUSE_GLUT=OFF', '-DCMAKE_BUILD_TYPE=Release'])
     else:
       if not os.path.exists('config.h'):
         stage('Configure (if this fails, run autogen.sh in bullet/ first)')
-        Popen(['../configure', '--disable-demos','--disable-dependency-tracking']).communicate()
-        # emscripten.configure(['../configure', '--disable-demos','--disable-dependency-tracking'])
+        emscripten.Building.configure(['../configure', '--disable-demos','--disable-dependency-tracking'])
 
     stage('Make')
 
     CORES = multiprocessing.cpu_count()
 
-    if cmake_build:
-      Popen(['mingw32-make', '-j', str(CORES)]).communicate()
+    if emscripten.WINDOWS:
+      emscripten.Building.make(['mingw32-make', '-j', str(CORES)])
     else:
-      Popen(['make', '-j', str(CORES)]).communicate()
+      emscripten.Building.make(['make', '-j', str(CORES)])
 
     stage('Link')
 
@@ -251,13 +208,11 @@ def build():
                     os.path.join('src', '.libs', 'libBulletCollision.a'),
                     os.path.join('src', '.libs', 'libLinearMath.a')]
 
-    temp = os.path.join('..','..', 'builds', target)
-    args = ['emcc','-DNOTHING_WAKA_WAKA']
-    args = args + emcc_args + ['glue.o'] + bullet_libs + ['--js-transform', 'python %s' % os.path.join('..','..', 'bundle.py')]
-    args = args + ['-o',temp]
-    Popen(["pwd"]).communicate()
-    print('emcc: ' + ' '.join(args))
-    Popen(args).communicate()
+    stage('emcc: ' + ' '.join(emcc_args))
+
+    temp = os.path.join('..', '..', 'builds', target)
+    emscripten.Building.emcc('-DNOTHING_WAKA_WAKA', emcc_args + ['glue.o'] + bullet_libs + ['--js-transform', 'python %s' % os.path.join('..', '..', 'bundle.py')],
+                            temp)
 
     assert os.path.exists(temp), 'Failed to create script code'
 
@@ -271,7 +226,6 @@ def build():
 
   finally:
     os.chdir(this_dir);
-    sys.exit()
 
 if __name__ == '__main__':
   build()
