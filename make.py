@@ -107,10 +107,10 @@ def build():
   else:
     not_debug = True
 
-  if g1 : args.append('-g1')
-  elif g2 : args.append('-g2')
-  elif g3 : args.append('-g3')
-  elif g4 : args.append('-g4')
+  if g1 : args.append('-g0')
+  elif g2 : args.append('-g1')
+  elif g3 : args.append('-g2')
+  elif g4 : args.append('-g3')
   else:
     not_release = True
 
@@ -122,11 +122,11 @@ def build():
         args.append('-O3')
       else:
         args.append('-O3')
-
-  args += '--llvm-lto 1 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s ASSERTIONS=0 -s ENVIRONMENT=web,worker'.split(" ")
+  # --llvm-lto
+  args += '-flto=thin -s EXIT_RUNTIME=0 -s FILESYSTEM=0 -s ASSERTIONS=0 -s ENVIRONMENT=web,worker'.split(" ")
   # args = '-O3 --llvm-lto 1 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=["UTF8ToString"] -s ASSERTIONS=1'
   if add_function_support:
-    args += '-s RESERVED_FUNCTION_POINTERS=20 -s EXPORTED_RUNTIME_METHODS=["addFunction"]'.split(" ")
+    args += '-s ALLOW_TABLE_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=["addFunction"]'.split(" ")
   if not wasm:
     args += '-s WASM=0 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ELIMINATE_DUPLICATE_FUNCTIONS=1 -s SINGLE_FILE=1'.split(" ") # -s LEGACY_VM_SUPPORT=1'
   else:
@@ -134,7 +134,7 @@ def build():
   if closure:
     args += '--closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1'.split(" ") # closure complains about the bullet Node class (Node is a DOM thing too)
   else:
-    args += '-s NO_DYNAMIC_EXECUTION=1'.split(" ")
+    args += '-s DYNAMIC_EXECUTION=0'.split(" ")
 
 
   emcc_args = args
@@ -198,14 +198,12 @@ def build():
       os.makedirs('build')
     os.chdir('build')
 
-    stage('Generate bindings')
-
-    Popen(["python",os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, this_idl), 'glue']).communicate()
+    glue_args = ["python",os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, this_idl), 'glue']
+    stage('Generate bindings:'+' '.join(glue_args))
+    Popen(glue_args).communicate()
     # Popen([emscripten.PYTHON, os.path.join(EMSCRIPTEN_ROOT, 'tools', 'webidl_binder.py'), os.path.join(this_dir, 'ammo.idl'), 'glue']).communicate()
     assert os.path.exists('glue.js')
     assert os.path.exists('glue.cpp')
-
-    stage('Build bindings')
 
     args = ['-I../src', '-c']
     for include in INCLUDES:
@@ -213,7 +211,8 @@ def build():
     args = ['emcc','glue.cpp'] + args
     args = args + ['-o','glue.o']
 
-    Popen(['pwd']).communicate()
+    stage('Build bindings:'+' '.join(args))
+
     Popen(args).communicate()
     assert(os.path.exists('glue.o'))
 
@@ -252,13 +251,12 @@ def build():
                     os.path.join('src', '.libs', 'libBulletCollision.a'),
                     os.path.join('src', '.libs', 'libLinearMath.a')]
 
-    stage('emcc: ' + ' '.join(emcc_args))
-
     temp = os.path.join('..','..', 'builds', target)
     args = ['emcc','-DNOTHING_WAKA_WAKA']
     args = args + emcc_args + ['glue.o'] + bullet_libs + ['--js-transform', 'python %s' % os.path.join('..','..', 'bundle.py')]
     args = args + ['-o',temp]
-    Popen(['pwd']).communicate()
+    Popen(["pwd"]).communicate()
+    print('emcc: ' + ' '.join(args))
     Popen(args).communicate()
 
     assert os.path.exists(temp), 'Failed to create script code'
