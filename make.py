@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from __future__ import print_function
 import os, sys, re, json, shutil, multiprocessing
 from subprocess import Popen, PIPE, STDOUT
 
@@ -39,11 +39,14 @@ def which(program):
 def build():
   EMSCRIPTEN_ROOT = os.environ.get('EMSCRIPTEN')
   if not EMSCRIPTEN_ROOT:
-    emcc = which('emcc')
-    EMSCRIPTEN_ROOT = os.path.dirname(emcc)
+    envEMSDK = os.environ.get('EMSDK')
+    if not envEMSDK:
+      print("ERROR: envEMSDK environment variable not found")
+      sys.exit(1)
+    EMSCRIPTEN_ROOT = os.path.join(envEMSDK, 'upstream', 'emscripten')
 
   if not EMSCRIPTEN_ROOT:
-    print "ERROR: EMSCRIPTEN_ROOT environment variable (which should be equal to emscripten's root dir) not found"
+    print("ERROR: EMSCRIPTEN_ROOT environment variable (which should be equal to emscripten's root dir) not found")
     sys.exit(1)
 
   sys.path.append(EMSCRIPTEN_ROOT)
@@ -116,11 +119,9 @@ def build():
     this_idl = 'ammo.idl'
     target = 'ammo.full.js' if not wasm else 'ammo.full.wasm.js'
 
-  print
-  print '--------------------------------------------------'
-  print 'Building ammo.js, build type:', emcc_args
-  print '--------------------------------------------------'
-  print
+  print('--------------------------------------------------')
+  print('Building ammo.js, build type:', emcc_args)
+  print('--------------------------------------------------')
 
   '''
   import os, sys, re
@@ -144,11 +145,10 @@ def build():
     global stage_counter
     stage_counter += 1
     text = 'Stage %d: %s' % (stage_counter, text)
-    print
-    print '=' * len(text)
-    print text
-    print '=' * len(text)
-    print
+
+    print('=' * len(text))
+    print(text)
+    print('=' * len(text))
 
   # Main
 
