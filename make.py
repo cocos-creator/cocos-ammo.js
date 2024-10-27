@@ -169,7 +169,7 @@ def build():
 
     stage('Build bindings')
 
-    args = ['-I../src', '-c']
+    args = ['-I../src', '-c',"-std=c++11"]
     for include in INCLUDES:
       args += ['-include', include]
     emscripten.Building.emcc('glue.cpp', args, 'glue.o')
