@@ -187,7 +187,7 @@ def build():
         stage('Configure (if this fails, run autogen.sh in bullet/ first)')
         emscripten.Building.configure(['../configure', '--disable-demos','--disable-dependency-tracking'])
 
-    stage('Make')
+    stage('Make:'+' '.join(args))
 
     CORES = multiprocessing.cpu_count()
 
