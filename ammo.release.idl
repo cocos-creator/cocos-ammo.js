@@ -355,7 +355,7 @@ interface btBoxShape {
   // XXX
   void setUnscaledHalfExtents([Ref] btVector3 boxHalfExtents);
 };
-btBoxShape implements btConvexInternalShape;
+btBoxShape implements btCollisionShape;
 
 interface btCapsuleShape {
   void btCapsuleShape(float radius, float height);
@@ -368,7 +368,7 @@ interface btCapsuleShape {
   // XXX
   void updateProp(float r, float h, long upAxis);
 };
-btCapsuleShape implements btConvexInternalShape;
+btBoxShape implements btCollisionShape;
 
 // interface btCapsuleShapeX {
 //   void btCapsuleShapeX(float radius, float height);
