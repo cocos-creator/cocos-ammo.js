@@ -117,18 +117,18 @@ def build():
   if not_debug and not_release:
       if debug:
         args.append('-g3')
-        closure = True
+        closure = False
       elif release:
         args.append('-O3')
       else:
         args.append('-O3')
   # --llvm-lto
-  args += '--llvm-lto 1 -s EXIT_RUNTIME=0 -s FILESYSTEM=0 -s ASSERTIONS=0 -s -s ENVIRONMENT=web,worker'.split(" ")
+  args += '-flto -s EXIT_RUNTIME=0 -s FILESYSTEM=0 -s ASSERTIONS=0 -s -s ENVIRONMENT=web,worker'.split(" ")
   # args = '-O3 --llvm-lto 1 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=["UTF8ToString"] -s ASSERTIONS=1'
   if add_function_support:
     args += '-s ALLOW_TABLE_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=["addFunction"]'.split(" ")
   if not wasm:
-    args += '-s WASM=0 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ELIMINATE_DUPLICATE_FUNCTIONS=1 -s SINGLE_FILE=1 -s LEGACY_VM_SUPPORT=1'.split(" ") # -s LEGACY_VM_SUPPORT=1'
+    args += '-s WASM=0 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ELIMINATE_DUPLICATE_FUNCTIONS=1 -s SINGLE_FILE=1'.split(" ") # -s LEGACY_VM_SUPPORT=1'
   else:
     args += '-s WASM=1 -s BINARYEN_IGNORE_IMPLICIT_TRAPS=1'.split(" ") # -s BINARYEN_TRAP_MODE="clamp"
   if closure:
@@ -255,7 +255,10 @@ def build():
                     os.path.join('src', '.libs', 'libBulletCollision.a'),
                     os.path.join('src', '.libs', 'libLinearMath.a')]
 
-    temp = os.path.join('..','..', 'builds', target)
+    temp = os.path.join('..','..', 'builds')
+    if not os.path.exists(temp):
+      os.makedirs(temp)
+    temp = os.path.join(temp,target)
     print('temp: ' + temp)
     if os.path.exists(temp):
       os.remove(temp)
@@ -278,6 +281,14 @@ def build():
   ''' + open(temp).read()
 
     open(temp, 'w').write(wrapped)
+
+    bulletdts = os.path.join('..', 'webBinding','bullet.d.ts')
+
+    bulletdts_dst = os.path.join('..','..', 'builds','bullet.d.ts')
+
+    if not os.path.exists(bulletdts_dst):
+      wrapped = open(bulletdts).read()
+      open(bulletdts_dst, 'w').write(wrapped)
 
   except Exception as e:
     print(f"发生错误：{e}")
