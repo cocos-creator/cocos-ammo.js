@@ -229,7 +229,7 @@ declare namespace Bullet {
 
         DbvtBroadphase_new(): ptr;
         SequentialImpulseConstraintSolver_new(): ptr;
-        SequentialImpulseConstraintSolver_reset(p: ptr): void;
+        ccDiscreteDynamicsWorld_reset(dispatcher: ptr,broadphase: ptr,solver: ptr): void;
 
         CollisionWorld_addCollisionObject(p: ptr, body: ptr, g: number, m: number): void;
         CollisionWorld_removeCollisionObject(p: ptr, body: ptr): void;

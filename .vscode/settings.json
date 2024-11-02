@@ -1,6 +1,14 @@
 {
     "files.associations": {
-        "*.idl": "idl"
+        "*.ts": "typescriptreact",
+        "*.idl": "idl",
+        "memory": "cpp",
+        "optional": "cpp",
+        "functional": "cpp",
+        "charconv": "cpp",
+        "xhash": "cpp",
+        "xlocbuf": "cpp",
+        "xmemory": "cpp"
     },
     "C_Cpp.default.includePath": ["bullet/src"]
 }
