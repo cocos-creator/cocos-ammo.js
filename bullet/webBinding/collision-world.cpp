@@ -45,6 +45,16 @@
         return (int)new btSequentialImpulseConstraintSolver();
     }
 
+    void DLL_EXPORT ccDiscreteDynamicsWorld_reset(int dispatcher,int broadphase,int solver)
+    {
+        btCollisionDispatcher *m_dispatcher = (btCollisionDispatcher *)dispatcher;
+        btDbvtBroadphase *m_broadphase = (btDbvtBroadphase *)broadphase;
+        btConstraintSolver *m_solver = (btConstraintSolver *)solver;
+
+        m_broadphase->resetPool(m_dispatcher);
+        m_solver->reset();
+    }
+
     // btDispatcherInfo
     bool DLL_EXPORT CollisionWorld_get_m_useContinuous(int ptr)
     {
